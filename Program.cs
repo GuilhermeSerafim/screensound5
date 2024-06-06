@@ -2,37 +2,16 @@
 using ScreenSound.Modelos;
 using ScreenSound5.Banco;
 
-try
-{
-    ScreenSoundContext context = new();
-    ArtistaDAO artistaDAO = new(context);
-    var listaDeArtistas = artistaDAO.ListarArtista();
-    foreach (var item in listaDeArtistas)
-    {
-        Console.WriteLine(item);
-    }
-}
-catch (Exception ex)
-{
-
-    Console.WriteLine(ex.Message);
-}
-
-// Early return
-return;
-
-Artista ira = new Artista("Ira!", "Banda Ira!");
-Artista beatles = new("The Beatles", "Banda The Beatles");
-
-Dictionary<string, Artista> artistasRegistrados = new();
-artistasRegistrados.Add(ira.Nome, ira);
-artistasRegistrados.Add(beatles.Nome, beatles);
+var _context = new ScreenSoundContext();
+var artistaDAL = new GenericDAL<Artista>(_context);
+var musicaDAL = new GenericDAL<Musica>(_context);
 
 Dictionary<int, Menu> opcoes = new();
 opcoes.Add(1, new MenuRegistrarArtista());
 opcoes.Add(2, new MenuRegistrarMusica());
 opcoes.Add(3, new MenuMostrarArtistas());
 opcoes.Add(4, new MenuMostrarMusicas());
+opcoes.Add(5, new MenuMostrarMusicasPorAno());
 opcoes.Add(-1, new MenuSair());
 
 void ExibirLogo()
@@ -56,16 +35,16 @@ void ExibirOpcoesDoMenu()
     Console.WriteLine("Digite 2 para registrar a música de um artista");
     Console.WriteLine("Digite 3 para mostrar todos os artistas");
     Console.WriteLine("Digite 4 para exibir todas as músicas de um artista");
+    Console.WriteLine("Digite 5 para exibir as músicas por ano de lançamento");
     Console.WriteLine("Digite -1 para sair");
-
     Console.Write("\nDigite a sua opção: ");
     string opcaoEscolhida = Console.ReadLine()!;
     int opcaoEscolhidaNumerica = int.Parse(opcaoEscolhida);
 
-    if (opcoes.ContainsKey(opcaoEscolhidaNumerica))
+    if (opcoes.ContainsKey(opcaoEscolhidaNumerica)) 
     {
         Menu menuASerExibido = opcoes[opcaoEscolhidaNumerica];
-        menuASerExibido.Executar(artistasRegistrados);
+        menuASerExibido.Executar(artistaDAL, musicaDAL);
         if (opcaoEscolhidaNumerica > 0) ExibirOpcoesDoMenu();
     }
     else
