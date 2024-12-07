@@ -1,20 +1,22 @@
 ﻿using ScreenSound.Modelos;
+using ScreenSound5.Banco;
 
 namespace ScreenSound.Menus;
 
 internal class MenuMostrarMusicas : Menu
 {
-    public override void Executar(Dictionary<string, Artista> artistasRegistrados)
+    public override void Executar(GenericDAL<Artista> artistaDAL, GenericDAL<Musica> musicaDAL)
     {
-        base.Executar(artistasRegistrados);
-        ExibirTituloDaOpcao("Exibir detalhes do artista");
+        base.Executar(artistaDAL, musicaDAL);
+        ExibirTituloDaOpcao("Exibir discografia");
         Console.Write("Digite o nome do artista que deseja conhecer melhor: ");
         string nomeDoArtista = Console.ReadLine()!;
-        if (artistasRegistrados.ContainsKey(nomeDoArtista))
+        // O parâmetro artista da expressão lambda, representa cada elemento da coleção que está sendo iterada.
+        var artistaRecuperado = artistaDAL.RecuperarObjPor(artista => artista.Nome.Equals(nomeDoArtista)); // A arrow function é a condição - Func<T, bool> condicao
+        if (artistaRecuperado is not null)
         {
-            Artista artista = artistasRegistrados[nomeDoArtista];
             Console.WriteLine("\nDiscografia:");
-            artista.ExibirDiscografia();
+            artistaRecuperado.ExibirDiscografia();
             Console.WriteLine("\nDigite uma tecla para voltar ao menu principal");
             Console.ReadKey();
             Console.Clear();
